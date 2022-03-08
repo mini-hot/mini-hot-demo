@@ -1,0 +1,30 @@
+{
+  "setting": {},
+  "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
+    "miniprogram": {
+      "list": [
+        {
+          "name": "本地代码",
+          "pathName": "pages/dynamic/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "远程代码",
+          "pathName": "pages/dynamic/indexCompile",
+          "query": "",
+          "scene": null
+        }
+      ]
+    }
+  }
+}

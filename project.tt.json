@@ -1,0 +1,13 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "mini-hot-demo",
+  "description": "小程序支持热更新",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram"
+}
