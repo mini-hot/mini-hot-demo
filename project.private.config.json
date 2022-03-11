@@ -23,6 +23,13 @@
           "pathName": "pages/dynamic/indexCompile",
           "query": "",
           "scene": null
+        },
+        {
+          "name": "PageA",
+          "pathName": "pages/dynamic-app/spa",
+          "query": "mini-hot=/PageA/001?a=1",
+          "scene": null,
+          "launchMode": "default"
         }
       ]
     }

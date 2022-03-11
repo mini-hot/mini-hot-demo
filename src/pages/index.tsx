@@ -32,6 +32,24 @@ export default () => {
             >
                 跳转到 「远程代码 Demo」
             </Button>
+            <Button
+                onClick={() => {
+                    Taro.navigateTo({
+                        url: `/pages/dynamic-app/spa?mini-hot=${encodeURIComponent('/PageA/001?a=1')}`,
+                    })
+                }}
+            >
+                跳转到 「PageA」
+            </Button>
+            <Button
+                onClick={() => {
+                    Taro.navigateTo({
+                        url: `/pages/dynamic-app/spa?mini-hot=/PageB`,
+                    })
+                }}
+            >
+                跳转到 「PageB」
+            </Button>
         </View>
     )
 }
