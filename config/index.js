@@ -1,3 +1,5 @@
+const { MiniRemoteChunkPlugin } = require('./plugins/webpack-plugin-mini-remote-chunk')
+
 const config = {
   projectName: 'mini-hot-demo',
   date: '2022-2-9',
@@ -40,6 +42,9 @@ const config = {
           generateScopedName: '[name]__[local]___[hash:base64:5]'
         }
       }
+    },
+    webpackChain (chain, webpack) {
+      chain.plugin('mini-remote-plugin').use(MiniRemoteChunkPlugin).end()
     }
   },
   h5: {
