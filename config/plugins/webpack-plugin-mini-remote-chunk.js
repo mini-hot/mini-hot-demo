@@ -2,10 +2,12 @@ const fse = require('fs-extra')
 const path = require('path')
 
 const PLUGIN_NAME = 'miniRemoteChunkPlugin'
-// cjs require
 
 function isDynamicDep(dep) {
-    return dep.type.startsWith('cjs require');
+    if (!dep || !dep.type) {
+        return false
+    }
+    return dep.type.startsWith('import()');
 }
   
 function isEntryDep(dep) {
@@ -13,38 +15,34 @@ function isEntryDep(dep) {
 }
 
 function getModuleId(module) {
-    return module.useRequest
+    return module.userRequest
 }
 
 class MiniRemoteChunkPlugin {
     dynamicDeps = new Set()
+    dynamicDepsMap = new Map()
 
     constructor(o) {
         console.log('constructor : ', o)
     }
 
     apply(compiler) {
-        compiler.hooks.beforeCompile.tap(
-            PLUGIN_NAME,
-            ({ normalModuleFactory }) => {
-                normalModuleFactory.hooks.afterResolve.tap(PLUGIN_NAME, (resolveModule) => {
-                    const { request, dependencies, resource } = resolveModule;
-                    if (dependencies.length > 1) {
-                        console.log(dependencies.length)
-                        console.log(dependencies, dependencies.length)
-                    }
-                    const moduleId = getModuleId(resolveModule)
-                    const isDynamic = dependencies.some(dep => {
-                        return isDynamicDep(dep) && resource.indexOf('node_modules') === -1
+        compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+            compilation.hooks.finishModules.tap(PLUGIN_NAME, (modules) => {
+                modules.forEach(module => {
+                    const { reasons = [] } = module
+                    const moduleId = getModuleId(module)
+                    const isDynamic = reasons.every(reason => {
+                        return isDynamicDep(reason.dependency)
                     })
                     if (isDynamic) {
                         this.dynamicDeps.add(moduleId)
+                        this.dynamicDepsMap.set(moduleId, module)
                     }
                 })
-            }
-        )
+            })
+        })
         compiler.hooks.afterCompile.tap(PLUGIN_NAME, () => {
-            console.log(this.dynamicDeps)
             return true
         })
     }
