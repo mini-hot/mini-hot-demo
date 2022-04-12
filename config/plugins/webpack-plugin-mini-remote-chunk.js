@@ -50,7 +50,7 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
         return Array.from(this.dynamicModules).reduce((cacheGroups, moduleId) => {
             const filename = path.basename(moduleId).split('.')[0]
             cacheGroups[filename] = {
-                name: `/remote/${filename}`,
+                name: module => `/remote/${filename}_${module._buildHash}`,
                 test: module => {
                     return getModuleId(module) === moduleId
                 },
