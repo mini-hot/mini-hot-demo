@@ -44,7 +44,9 @@ const config = {
       }
     },
     webpackChain (chain, webpack) {
-      chain.plugin('mini-remote-plugin').use(MiniRemoteChunkPlugin).end()
+      chain.plugin('mini-remote-plugin').use(MiniRemoteChunkPlugin, [{
+        publicPath: 'http://public.cdn.pingan.com.cn/m/weapp-core/'
+      }]).end()
     }
   },
   h5: {
