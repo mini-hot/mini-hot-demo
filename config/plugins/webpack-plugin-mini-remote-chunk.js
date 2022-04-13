@@ -17,19 +17,23 @@ function getModuleId(module) {
 }
 
 function normalizePublicPath (url) {
-    if(url[url.length - 1] !== '/') return
+    if(url[url.length - 1] !== '/') return url
     return url.slice(0, -1)
 }
 
 class MiniRemoteChunkPlugin extends SplitChunksPlugin {
     dynamicModules = new Set()
-    chunkNameMap = new Map()
+    moduleBuildInfoMap = new Map()
+    dynamicModuleReasonMap = new Map()
+    splitChunkNames = []
     options = null
     publicPath = ''
+    remoteChunkOutputPath = ''
 
     constructor(o) {
         super(o)
         this.publicPath = normalizePublicPath(o.publicPath)
+        this.remoteChunkOutputPath = normalizePublicPath(o.remoteChunkOutputPath)
     }
 
     apply(compiler) {
@@ -59,15 +63,28 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
             if (isDynamic) {
                 this.dynamicModules.add(moduleId)
                 const filename = path.basename(moduleId).split('.')[0]
-                this.chunkNameMap.set(moduleId, `/remote/${filename}_${module._buildHash}`)
+                this.moduleBuildInfoMap.set(moduleId, {
+                    hash: module._buildHash,
+                    filename
+                })
+                this.dynamicModuleReasonMap.set(moduleId, reasons)
             }
+        })
+    }
+
+    isEntryDynamicModule = (moduleId) => {
+        const reasons = this.dynamicModuleReasonMap.get(moduleId)
+        return reasons.every(reason => {
+            const reasonModuleId = getModuleId(reason.module)
+            return !this.dynamicModules.has(reasonModuleId)
         })
     }
 
     getDynamicChunkCacheGroups = (initialCacheGroups = {}) => {
         return Array.from(this.dynamicModules).reduce((cacheGroups, moduleId) => {
-            const chunkName = this.chunkNameMap.get(moduleId)
-            const filename = path.basename(moduleId).split('.')[0]
+            const { filename } = this.moduleBuildInfoMap.get(moduleId)
+            const chunkName = this.getChunkName(moduleId)
+            this.splitChunkNames.push(chunkName)
             cacheGroups[filename] = {
                 name: chunkName,
                 test: module => {
@@ -80,9 +97,15 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
         }, initialCacheGroups)
     }
 
+    getChunkName = (moduleId) => {
+        const isEntryModule = this.isEntryDynamicModule(moduleId)
+        const { filename, hash } = this.moduleBuildInfoMap.get(moduleId)
+        return `${this.remoteChunkOutputPath}/${filename}${isEntryModule ? '' : '_' + hash }`
+    }
+
     stableChunkId = chunks => {
         chunks.forEach(chunk => {
-            if (Array.from(this.chunkNameMap.values()).find(m => chunk.name === m)) {
+            if (this.splitChunkNames.find(m => chunk.name === m)) {
                 chunk.id = chunk.name
             }
         })
