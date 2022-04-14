@@ -1,4 +1,3 @@
-const fse = require('fs-extra')
 const SplitChunksPlugin = require('webpack/lib/optimize/SplitChunksPlugin')
 const { Template } = require('webpack')
 const path = require('path')
@@ -16,8 +15,8 @@ function getModuleId(module) {
     return module.userRequest || module._identifier
 }
 
-function normalizePublicPath (url) {
-    if(url[url.length - 1] !== '/') return url
+function normalizePublicPath(url) {
+    if (url[url.length - 1] !== '/') return url
     return url.slice(0, -1)
 }
 
@@ -29,11 +28,13 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
     options = null
     publicPath = ''
     remoteChunkOutputPath = ''
+    entryChunkUseCache = false
 
     constructor(o) {
         super(o)
         this.publicPath = normalizePublicPath(o.publicPath)
         this.remoteChunkOutputPath = normalizePublicPath(o.remoteChunkOutputPath)
+        this.entryChunkUseCache = o.entryChunkUseCache
     }
 
     apply(compiler) {
@@ -65,14 +66,14 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
                 const filename = path.basename(moduleId).split('.')[0]
                 this.moduleBuildInfoMap.set(moduleId, {
                     hash: module._buildHash,
-                    filename
+                    filename,
                 })
                 this.dynamicModuleReasonMap.set(moduleId, reasons)
             }
         })
     }
 
-    isEntryDynamicModule = (moduleId) => {
+    isEntryDynamicModule = moduleId => {
         const reasons = this.dynamicModuleReasonMap.get(moduleId)
         return reasons.every(reason => {
             const reasonModuleId = getModuleId(reason.module)
@@ -97,10 +98,10 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
         }, initialCacheGroups)
     }
 
-    getChunkName = (moduleId) => {
+    getChunkName = moduleId => {
         const isEntryModule = this.isEntryDynamicModule(moduleId)
         const { filename, hash } = this.moduleBuildInfoMap.get(moduleId)
-        return `${this.remoteChunkOutputPath}/${filename}${isEntryModule ? '' : '_' + hash }`
+        return `${this.remoteChunkOutputPath}/${filename}${isEntryModule ? '' : '_' + hash}`
     }
 
     stableChunkId = chunks => {
@@ -114,7 +115,7 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
     injectVar = mainTemplate => {
         mainTemplate.hooks.requireExtensions.tap(PLUGIN_NAME, source => {
             const __dynamicEntryChunkInfo__ = Array.from(this.dynamicModules).reduce((info, moduleId) => {
-                if(this.isEntryDynamicModule(moduleId)) {
+                if (this.isEntryDynamicModule(moduleId)) {
                     const chunkName = this.getChunkName(moduleId)
                     info[chunkName] = true
                 }
@@ -122,7 +123,9 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
             }, {})
             return Template.asString([
                 `var __dynamicChunkPublicPath__ = "${this.publicPath}";`,
-                `var __dynamicEntryChunkInfo__ = ${JSON.stringify(__dynamicEntryChunkInfo__)}`,
+                this.entryChunkUseCache
+                    ? ''
+                    : `var __dynamicEntryChunkInfo__ = ${JSON.stringify(__dynamicEntryChunkInfo__)}`,
                 source,
             ])
         })
@@ -135,8 +138,13 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
                 replaceRegex,
                 Template.asString([
                     'var jsonpScriptSrc = function (chunkId) {',
-                    'var query = __dynamicEntryChunkInfo__[chunkId] ? "?v=" + new Date().getTime() : ""',
-                    Template.indent(['return __dynamicChunkPublicPath__ + "" + chunkId + ".js" + query;']),
+                    this.entryChunkUseCache
+                        ? Template.indent(['return __dynamicChunkPublicPath__ + "" + chunkId + ".js";'])
+                        : Template.indent([
+                              'var query = __dynamicEntryChunkInfo__[chunkId] ? "?v=" + new Date().getTime() : ""',
+                              'return __dynamicChunkPublicPath__ + "" + chunkId + ".js" + query;',
+                          ]),
+
                     '}',
                 ])
             )
