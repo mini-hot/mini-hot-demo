@@ -112,10 +112,17 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
     }
 
     injectVar = mainTemplate => {
-        // 注入代码 PUPLIC_PATH
         mainTemplate.hooks.requireExtensions.tap(PLUGIN_NAME, source => {
+            const __dynamicEntryChunkInfo__ = Array.from(this.dynamicModules).reduce((info, moduleId) => {
+                if(this.isEntryDynamicModule(moduleId)) {
+                    const chunkName = this.getChunkName(moduleId)
+                    info[chunkName] = true
+                }
+                return info
+            }, {})
             return Template.asString([
                 `var __dynamicChunkPublicPath__ = "${this.publicPath}";`,
+                `var __dynamicEntryChunkInfo__ = ${JSON.stringify(__dynamicEntryChunkInfo__)}`,
                 source,
             ])
         })
@@ -128,7 +135,8 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
                 replaceRegex,
                 Template.asString([
                     'var jsonpScriptSrc = function (chunkId) {',
-                    Template.indent(['return __dynamicChunkPublicPath__ + "" + chunkId + ".js";']),
+                    'var query = __dynamicEntryChunkInfo__[chunkId] ? "?v=" + new Date().getTime() : ""',
+                    Template.indent(['return __dynamicChunkPublicPath__ + "" + chunkId + ".js" + query;']),
                     '}',
                 ])
             )
