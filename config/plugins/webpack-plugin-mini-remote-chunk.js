@@ -123,7 +123,7 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
             }, {})
             return Template.asString([
                 `var __dynamicChunkPublicPath__ = "${this.publicPath}";`,
-                this.entryChunkUseCache
+                this.entryChunkUseCache === false
                     ? ''
                     : `var __dynamicEntryChunkInfo__ = ${JSON.stringify(__dynamicEntryChunkInfo__)}`,
                 source,
@@ -134,19 +134,25 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
     rewriteJsonpScriptSrcFunc = mainTemplate => {
         mainTemplate.hooks.localVars.tap(PLUGIN_NAME, source => {
             const replaceRegex = /function jsonpScriptSrc\(chunkId\) \{\n(.*)\n\}/
+            let newSource = Template.indent(['return __dynamicChunkPublicPath__ + "" + chunkId + ".js";'])
+            if (typeof this.entryChunkUseCache === 'function') {
+                newSource = Template.indent([
+                    'var url = __dynamicChunkPublicPath__ + "" + chunkId + ".js"',
+                    `var queryHandleFunc = ${this.entryChunkUseCache};`,
+                    'if(__dynamicEntryChunkInfo__[chunkId]) {',
+                    Template.indent(['url = queryHandleFunc(url);']),
+                    '}',
+                    'return url;',
+                ])
+            } else if (this.entryChunkUseCache === true) {
+                newSource = Template.indent([
+                    'var query = __dynamicEntryChunkInfo__[chunkId] ? "?v=" + Date.now() : ""',
+                    'return __dynamicChunkPublicPath__ + "" + chunkId + ".js" + query;',
+                ])
+            }
             source = source.replace(
                 replaceRegex,
-                Template.asString([
-                    'var jsonpScriptSrc = function (chunkId) {',
-                    this.entryChunkUseCache
-                        ? Template.indent(['return __dynamicChunkPublicPath__ + "" + chunkId + ".js";'])
-                        : Template.indent([
-                              'var query = __dynamicEntryChunkInfo__[chunkId] ? "?v=" + new Date().getTime() : ""',
-                              'return __dynamicChunkPublicPath__ + "" + chunkId + ".js" + query;',
-                          ]),
-
-                    '}',
-                ])
+                Template.asString(['var jsonpScriptSrc = function (chunkId) {', newSource, '}'])
             )
             return source
         })

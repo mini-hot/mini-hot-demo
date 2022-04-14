@@ -47,7 +47,9 @@ const config = {
       chain.plugin('mini-remote-plugin').use(MiniRemoteChunkPlugin, [{
         publicPath: 'http://public.cdn.pingan.com.cn/m/weapp-core/',
         remoteChunkOutputPath: '/remote',
-        entryChunkUseCache: true,
+        entryChunkUseCache: function (url) {
+          return `${url}?_v_=${Date.now()}`
+        },
       }]).end()
     }
   },
