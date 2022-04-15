@@ -1,4 +1,5 @@
-const { MiniRemoteChunkPlugin } = require('./plugins/webpack-plugin-mini-remote-chunk')
+const MiniRemoteChunkPlugin = require('./plugins/webpack-plugin-mini-remote-chunk')
+const path = require('path')
 
 const config = {
   projectName: 'mini-hot-demo',
@@ -11,7 +12,18 @@ const config = {
   },
   sourceRoot: 'src',
   outputRoot: 'dist',
-  plugins: [],
+  plugins: [
+    [
+      path.join(__dirname, './plugins/taro-mini-remote-chunk-plugin.js'),
+      {
+        publicPath: 'http://public.cdn.pingan.com.cn/m/weapp-core/',
+        remoteChunkOutputPath: '/remote',
+        entryChunkUseCache: function (url) {
+          return `${url}?_v_=${Date.now()}`
+        },
+      }
+    ]
+  ],
   defineConstants: {
   },
   copy: {
@@ -25,9 +37,7 @@ const config = {
     postcss: {
       pxtransform: {
         enable: true,
-        config: {
-
-        }
+        config: {}
       },
       url: {
         enable: true,
@@ -43,15 +53,6 @@ const config = {
         }
       }
     },
-    webpackChain (chain, webpack) {
-      chain.plugin('mini-remote-plugin').use(MiniRemoteChunkPlugin, [{
-        publicPath: 'http://public.cdn.pingan.com.cn/m/weapp-core/',
-        remoteChunkOutputPath: '/remote',
-        entryChunkUseCache: function (url) {
-          return `${url}?_v_=${Date.now()}`
-        },
-      }]).end()
-    }
   },
   h5: {
     publicPath: '/',
@@ -59,8 +60,7 @@ const config = {
     postcss: {
       autoprefixer: {
         enable: true,
-        config: {
-        }
+        config: {}
       },
       cssModules: {
         enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true

@@ -159,67 +159,68 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
     }
 
     rewriteJsonpScriptFunc = mainTemplate => {
-        mainTemplate.hooks.jsonpScript?.tap('JsonpMainTemplatePlugin', () => {
-            const { chunkLoadTimeout } = mainTemplate.outputOptions
-            return Template.asString([
-                'var onScriptComplete;',
-                '// create error before stack unwound to get useful stacktrace later',
-                'var error = new Error();',
-                'onScriptComplete = function (event) {',
-                Template.indent([
-                    'clearTimeout(timeout);',
-                    'var chunk = installedChunks[chunkId];',
-                    'if(chunk !== 0) {',
+        mainTemplate.hooks.jsonpScript &&
+            mainTemplate.hooks.jsonpScript.tap('JsonpMainTemplatePlugin', () => {
+                const { chunkLoadTimeout } = mainTemplate.outputOptions
+                return Template.asString([
+                    'var onScriptComplete;',
+                    '// create error before stack unwound to get useful stacktrace later',
+                    'var error = new Error();',
+                    'onScriptComplete = function (event) {',
                     Template.indent([
-                        'if(chunk) {',
+                        'clearTimeout(timeout);',
+                        'var chunk = installedChunks[chunkId];',
+                        'if(chunk !== 0) {',
                         Template.indent([
-                            "var errorType = event && (event.type === 'load' ? 'missing' : event.type);",
-                            'var realSrc = event && event.target && event.target.src || chunkId;',
-                            "error.message = 'Loading chunk ' + chunkId + ' failed.\\n(' + errorType + ': ' + realSrc + ')';",
-                            "error.name = 'ChunkLoadError';",
-                            'error.type = errorType;',
-                            'error.request = realSrc;',
-                            'chunk[1](error);',
+                            'if(chunk) {',
+                            Template.indent([
+                                "var errorType = event && (event.type === 'load' ? 'missing' : event.type);",
+                                'var realSrc = event && event.target && event.target.src || chunkId;',
+                                "error.message = 'Loading chunk ' + chunkId + ' failed.\\n(' + errorType + ': ' + realSrc + ')';",
+                                "error.name = 'ChunkLoadError';",
+                                'error.type = errorType;',
+                                'error.request = realSrc;',
+                                'chunk[1](error);',
+                            ]),
+                            '}',
+                            'installedChunks[chunkId] = undefined;',
                         ]),
                         '}',
-                        'installedChunks[chunkId] = undefined;',
                     ]),
-                    '}',
-                ]),
-                '};',
-                'var timeout = setTimeout(function(){',
-                Template.indent(["onScriptComplete({ type: 'timeout' });"]),
-                `}, ${chunkLoadTimeout});`,
-                'var __chunkFailCallback = function () {',
-                Template.indent(["onScriptComplete({ type: 'request:fail' });"]),
-                '};',
-                'var __chunkSuccessCallback = function (res) {',
-                Template.indent([
-                    'if (res.statusCode !== 200) {',
-                    Template.indent(['__chunkFailCallback();', 'return;']),
-                    '}',
-                    'try {',
+                    '};',
+                    'var timeout = setTimeout(function(){',
+                    Template.indent(["onScriptComplete({ type: 'timeout' });"]),
+                    `}, ${chunkLoadTimeout});`,
+                    'var __chunkFailCallback = function () {',
+                    Template.indent(["onScriptComplete({ type: 'request:fail' });"]),
+                    '};',
+                    'var __chunkSuccessCallback = function (res) {',
                     Template.indent([
-                        'var rootContext = globalThis;',
-                        "var interpreter = new wx['eval5'].Interpreter(rootContext, { rootContext: rootContext });",
-                        'interpreter.evaluate(res.data)',
+                        'if (res.statusCode !== 200) {',
+                        Template.indent(['__chunkFailCallback();', 'return;']),
+                        '}',
+                        'try {',
+                        Template.indent([
+                            'var rootContext = globalThis;',
+                            "var interpreter = new wx['eval5'].Interpreter(rootContext, { rootContext: rootContext });",
+                            'interpreter.evaluate(res.data)',
+                        ]),
+                        '} catch(error) {',
+                        'console.trace(error)',
+                        '}',
                     ]),
-                    '} catch(error) {',
-                    'console.trace(error)',
-                    '}',
-                ]),
-                '};',
-                'console.log(jsonpScriptSrc(chunkId));',
-                'wx.request({',
-                Template.indent([
-                    'url: jsonpScriptSrc(chunkId),',
-                    `timeout: ${chunkLoadTimeout},`,
-                    'success: __chunkSuccessCallback,',
-                    'fail: __chunkFailCallback',
-                ]),
-                '})',
-            ])
-        })
+                    '};',
+                    'console.log(jsonpScriptSrc(chunkId));',
+                    'wx.request({',
+                    Template.indent([
+                        'url: jsonpScriptSrc(chunkId),',
+                        `timeout: ${chunkLoadTimeout},`,
+                        'success: __chunkSuccessCallback,',
+                        'fail: __chunkFailCallback',
+                    ]),
+                    '})',
+                ])
+            })
     }
 
     rewriteRequireEnsureFunc = mainTemplate => {
@@ -253,6 +254,4 @@ class MiniRemoteChunkPlugin extends SplitChunksPlugin {
     }
 }
 
-module.exports = {
-    MiniRemoteChunkPlugin,
-}
+module.exports = MiniRemoteChunkPlugin
