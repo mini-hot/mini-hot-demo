@@ -1,81 +1,76 @@
-const MiniRemoteChunkPlugin = require('./plugins/webpack-plugin-mini-remote-chunk')
-const path = require('path')
-
-const config = {
-  projectName: 'mini-hot-demo',
-  date: '2022-2-9',
-  designWidth: 750,
-  deviceRatio: {
-    640: 2.34 / 2,
-    750: 1,
-    828: 1.81 / 2
-  },
-  sourceRoot: 'src',
-  outputRoot: 'dist',
-  plugins: [
-    [
-      path.join(__dirname, './plugins/taro-mini-remote-chunk-plugin.js'),
-      {
-        publicPath: 'http://public.cdn.pingan.com.cn/m/weapp-core/',
-        remoteChunkOutputPath: '/remote',
-        entryChunkUseCache: function (url) {
-          return `${url}?_v_=${Date.now()}`
-        },
-      }
-    ]
-  ],
-  defineConstants: {
-  },
-  copy: {
-    patterns: [
-    ],
-    options: {
-    }
-  },
-  framework: 'react',
-  mini: {
-    postcss: {
-      pxtransform: {
-        enable: true,
-        config: {}
-      },
-      url: {
-        enable: true,
-        config: {
-          limit: 1024 // 设定转换尺寸上限
-        }
-      },
-      cssModules: {
-        enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
-        config: {
-          namingPattern: 'module', // 转换模式，取值为 global/module
-          generateScopedName: '[name]__[local]___[hash:base64:5]'
-        }
-      }
+let config = {
+    projectName: 'mini-hot-demo',
+    date: '2022-2-9',
+    designWidth: 750,
+    deviceRatio: {
+        640: 2.34 / 2,
+        750: 1,
+        828: 1.81 / 2,
     },
-  },
-  h5: {
-    publicPath: '/',
-    staticDirectory: 'static',
-    postcss: {
-      autoprefixer: {
-        enable: true,
-        config: {}
-      },
-      cssModules: {
-        enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
-        config: {
-          namingPattern: 'module', // 转换模式，取值为 global/module
-          generateScopedName: '[name]__[local]___[hash:base64:5]'
-        }
-      }
-    }
-  }
+    sourceRoot: 'src',
+    outputRoot: 'dist',
+    plugins: [
+        [
+            '@mini-hot/plugins',
+            {
+                publicPath: 'http://test-xxxx-host/',
+                hotUpdateAssetsOutputPath: '/remote',
+                entryChunkUseCache: function(url) {
+                    return `${url}?_v_=${Date.now()}`
+                },
+                devServerPort: 9998,
+            },
+        ],
+    ],
+    defineConstants: {},
+    copy: {
+        patterns: [],
+        options: {},
+    },
+    framework: 'react',
+    mini: {
+        postcss: {
+            pxtransform: {
+                enable: true,
+                config: {},
+            },
+            url: {
+                enable: true,
+                config: {
+                    limit: 1024, // 设定转换尺寸上限
+                },
+            },
+            cssModules: {
+                enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
+                config: {
+                    namingPattern: 'module', // 转换模式，取值为 global/module
+                    generateScopedName: '[name]__[local]___[hash:base64:5]',
+                },
+            },
+        },
+    },
+    h5: {
+        publicPath: '/',
+        staticDirectory: 'static',
+        postcss: {
+            autoprefixer: {
+                enable: true,
+                config: {},
+            },
+            cssModules: {
+                enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
+                config: {
+                    namingPattern: 'module', // 转换模式，取值为 global/module
+                    generateScopedName: '[name]__[local]___[hash:base64:5]',
+                },
+            },
+        },
+    },
 }
 
-module.exports = function (merge) {
-  if (process.env.NODE_ENV === 'development') {
-    return merge({}, config, require('./dev'))
-  }
-  return merge({}, config, require('./prod'))
+module.exports = function(merge) {
+    if (process.env.NODE_ENV === 'development') {
+        return merge({}, config, require('./dev'))
+    }
+    return merge({}, config, require('./prod'))
 }
