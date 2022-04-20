@@ -13,12 +13,10 @@ let config = {
         [
             '@mini-hot/plugins',
             {
-                publicPath: 'http://test-xxxx-host/',
-                hotUpdateAssetsOutputPath: '/remote',
-                entryChunkUseCache: function(url) {
-                    return `${url}?_v_=${Date.now()}`
-                },
-                devServerPort: 9998,
+                publicPath: 'http://test-xxxx-host',
+                hotUpdateAssetsOutputPath: 'remote',
+                entryChunkUseCache: false,
+                devServerPort: 9798,
             },
         ],
     ],
