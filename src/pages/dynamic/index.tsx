@@ -27,7 +27,7 @@ export default createRemotePage(
                 </View>
             )
         },
-        preFetch: true,
+        prefetch: true,
         timeout: 3000,
     }
 )
