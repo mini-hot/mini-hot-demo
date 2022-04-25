@@ -35,7 +35,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.7.7",
-    "@mini-hot/plugins": "0.2.2-beta.0",
+    "@mini-hot/plugins": "0.2.2",
     "@tarojs/cli": "3.4.5",
     "@tarojs/components": "3.4.5",
     "@tarojs/plugin-framework-react": "3.4.5",
@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.0",
-    "@mini-hot/taro": "0.1.1-beta.0",
+    "@mini-hot/taro": "0.2.2",
     "@tarojs/mini-runner": "3.4.5",
     "@tarojs/webpack-runner": "3.4.5",
     "@types/react": "^17.0.2",
