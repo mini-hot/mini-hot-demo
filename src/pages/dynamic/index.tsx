@@ -9,12 +9,12 @@ export default createRemotePage(
         })
         if (Math.random() > 0.5) {
             // 随机出错
-            console.error('运气不好，失败了！❌')
+            console.error('「模拟失败」运气不好，失败了！❌')
             throw 'error'
         }
         console.log('运气不错，成功了！ ✅')
 
-        return import('./RemotePage')
+        return import('./RemoteConfigPage')
     },
     {
         onLoading: () => {

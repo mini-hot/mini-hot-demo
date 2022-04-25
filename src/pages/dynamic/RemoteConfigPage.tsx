@@ -4,16 +4,16 @@ import Taro from '@tarojs/taro'
 
 export default class extends Component {
     componentDidMount = () => {
-        console.log(this.props)
+        console.log('componentDidMount')
         Taro.setNavigationBarTitle({
-            title: '这是个 PageA',
+            title: 'RemoteConfigPage',
         })
     }
     componentDidShow() {
-        console.log('PageA componentDidShow')
+        console.log('componentDidShow')
     }
     render() {
-        return <View>这是个 SPA 模式下的 PageA</View>
+        return <View>这是个通过复杂配置进入的远程页面</View>
     }
     onShareAppMessage = () => {
         return {}

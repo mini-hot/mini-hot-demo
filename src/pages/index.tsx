@@ -12,7 +12,7 @@ export default () => {
                     })
                 }}
             >
-                跳转到「简单 API Demo」
+                跳转到「远程页面」
             </Button>
             <Button
                 onClick={() => {
@@ -21,16 +21,7 @@ export default () => {
                     })
                 }}
             >
-                跳转到 「自定义 Demo」
-            </Button>
-            <Button
-                onClick={() => {
-                    Taro.navigateTo({
-                        url: '/pages/dynamic/indexCompile',
-                    })
-                }}
-            >
-                跳转到 「远程代码 Demo」
+                跳转到 「带配置远程页面」
             </Button>
             <Button
                 onClick={() => {
@@ -39,7 +30,7 @@ export default () => {
                     })
                 }}
             >
-                跳转到 「PageA」
+                跳转到 「SPA - PageA」
             </Button>
             <Button
                 onClick={() => {
@@ -48,7 +39,7 @@ export default () => {
                     })
                 }}
             >
-                跳转到 「PageB」
+                跳转到 「SPA - PageB」
             </Button>
         </View>
     )

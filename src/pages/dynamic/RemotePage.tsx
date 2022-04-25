@@ -6,14 +6,14 @@ export default class extends Component {
     componentDidMount = () => {
         console.log('componentDidMount')
         Taro.setNavigationBarTitle({
-            title: '这是个远程页面',
+            title: 'RemotePage',
         })
     }
     componentDidShow() {
         console.log('componentDidShow')
     }
     render() {
-        return <View>this is RemotePage</View>
+        return <View>这是个简单的远程页面</View>
     }
     onShareAppMessage = () => {
         return {}

@@ -2,6 +2,7 @@ import { Component } from 'react'
 import * as eval5 from 'eval5';
 import './app.less'
 
+// @ts-ignore
 wx.eval5 = eval5
 class App extends Component {
     componentDidMount() {}

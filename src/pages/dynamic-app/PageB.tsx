@@ -13,7 +13,7 @@ export default class extends Component {
         console.log('PageB componentDidShow')
     }
     render() {
-        return <View>这是个 PageB</View>
+        return <View>这是个 SPA 模式下的 PageB</View>
     }
     onShareAppMessage = () => {
         return {}
