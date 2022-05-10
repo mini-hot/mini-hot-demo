@@ -1,22 +1,26 @@
-import React, { Component } from 'react'
+import React, { Component, Suspense } from 'react'
 import { View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import ComponentB  from './components/ComponentB'
+
+const ComponentC = React.lazy(() => import('./components/ComponentC'))
 
 export default class extends Component {
+
     componentDidMount = () => {
         console.log(this.props)
         Taro.setNavigationBarTitle({
-            title: '这是个 PageB',
+            title: '这是个 PageC',
         })
     }
     componentDidShow() {
-        console.log('PageB componentDidShow')
+        console.log('PageC componentDidShow')
     }
     render() {
         return <View>
-            这是个 PageB
-            <ComponentB />
+            这是个 PageC
+            <Suspense fallback={<View>loading...</View>}>
+                <ComponentC />
+            </Suspense>
         </View>
     }
     onShareAppMessage = () => {

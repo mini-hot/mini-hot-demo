@@ -50,6 +50,15 @@ export default () => {
             >
                 跳转到 「PageB」
             </Button>
+            <Button
+                onClick={() => {
+                    Taro.navigateTo({
+                        url: `/pages/dynamic-app/spa?mini-hot=/PageC`,
+                    })
+                }}
+            >
+                跳转到 「PageC」
+            </Button>
         </View>
     )
 }
