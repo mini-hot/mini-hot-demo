@@ -1341,10 +1341,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@mini-hot/plugins@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.npmmirror.com/@mini-hot/plugins/-/plugins-0.2.2.tgz#e158c9fb1005ff0b7327e1719bb3b35dbd5dd481"
-  integrity sha512-+Ac9OGaqvIaWI2Z2QLXVRgS9OCBJRFngomPdVoFmRf0/+Jzz2CwzGtQHezLOTvxuVnyL/7v9R9IO9Kx8USTNYw==
+"@mini-hot/plugins@0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@mini-hot/plugins/-/plugins-0.2.3.tgz#1098680121c360fb79deda7bc3894f2e59889466"
+  integrity sha512-KVfYCMFbQWvHqRssUuKjDKRnv+93PtudXkClJhFTnv3VJCLcKuktUN72Lx5McAw2WWHDm+a8sk9s4bwZMwN2xQ==
   dependencies:
     colors "^1.4.0"
     finalhandler "^1.2.0"
@@ -1353,10 +1353,10 @@
     md5 "^2.3.0"
     serve-static "^1.15.0"
 
-"@mini-hot/taro@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.npmmirror.com/@mini-hot/taro/-/taro-0.2.2.tgz#0cd9cfca3efd8b83298f079627f7a4a771fe1fc7"
-  integrity sha512-tTWV8HXO46Eil5xUyhp1A1m2+4UeVv86z/+IvZEtkPidSbPCVq+v1luaUcjtsmVqb6pbsRA+47a6V2yLMZlVmA==
+"@mini-hot/taro@0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@mini-hot/taro/-/taro-0.2.3.tgz#dd1d33b892c7a96eecb90550e833eaaf0f4e1fad"
+  integrity sha512-y8QIiqgBOz5KYyCVIcHd6s77d1k52jhfRUtYexymt9Q7o8xJlu0Qjlth0V/vhVsF8lKR0JnLCe+dDaR3B95q2g==
   dependencies:
     "@babel/core" "^7.17.9"
     "@babel/plugin-transform-runtime" "^7.17.0"
