@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
-import { View } from '@tarojs/components'
+import { View, Image, Text } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 
 export default class extends Component {
     componentDidMount = () => {
-        console.log(this.props)
         Taro.setNavigationBarTitle({
             title: '这是个 ComponentA',
         })
@@ -13,7 +12,12 @@ export default class extends Component {
         console.log('ComponentA componentDidShow')
     }
     render() {
-        return <View>这是个 ComponentA</View>
+        return (
+            <View>
+                <Text>这是个 ComponentA</Text>
+                <Image src={require('./imgs/logo.png')} style={{ width: 100, height: 100 }}></Image>
+            </View>
+        )
     }
     onShareAppMessage = () => {
         return {}
